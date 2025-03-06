@@ -206,7 +206,7 @@
     {
         "openshift_version": "4.18",
         "cpu_architecture": "s390x",
-        "url": "https://mirror.openshift.com/pub/openshift-v4/s390x/dependencies/rhcos/pre-release/4.18.0-rc.2/rhcos-4.18.0-rc.2-s390x-live.s390x.iso",
-        "version": "418.94.202411221729-0"
+        "url": "https://mirror.openshift.com/pub/openshift-v4/s390x/dependencies/rhcos/4.18/4.18.1/rhcos-4.18.1-s390x-live.s390x.iso",
+        "version": "418.94.202501221327-0"
     }
 ]
