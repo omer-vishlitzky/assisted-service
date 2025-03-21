@@ -74,7 +74,7 @@ require (
 	github.com/thedevsaddam/retry v1.2.1
 	github.com/thoas/go-funk v0.9.3
 	github.com/vincent-petithory/dataurl v1.0.0
-	golang.org/x/crypto v0.31.0
+	golang.org/x/crypto v0.32.0
 	golang.org/x/sync v0.11.0
 	golang.org/x/sys v0.30.0
 	gopkg.in/ini.v1 v1.67.0
