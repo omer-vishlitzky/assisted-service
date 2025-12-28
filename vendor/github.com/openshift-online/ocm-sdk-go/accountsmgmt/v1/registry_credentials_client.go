@@ -22,13 +22,11 @@ package v1 // github.com/openshift-online/ocm-sdk-go/accountsmgmt/v1
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/openshift-online/ocm-sdk-go/errors"
 	"github.com/openshift-online/ocm-sdk-go/helpers"
 )
@@ -149,7 +147,7 @@ func (r *RegistryCredentialsAddRequest) SendContext(ctx context.Context) (result
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
@@ -161,16 +159,6 @@ func (r *RegistryCredentialsAddRequest) SendContext(ctx context.Context) (result
 		return
 	}
 	return
-}
-
-// marshall is the method used internally to marshal requests for the
-// 'add' method.
-func (r *RegistryCredentialsAddRequest) marshal(writer io.Writer) error {
-	stream := helpers.NewStream(writer)
-	r.stream(stream)
-	return stream.Error
-}
-func (r *RegistryCredentialsAddRequest) stream(stream *jsoniter.Stream) {
 }
 
 // RegistryCredentialsAddResponse is the response for the 'add' method.
@@ -259,10 +247,9 @@ func (r *RegistryCredentialsListRequest) Header(name string, value interface{}) 
 // a SQL statement. For example, in order to sort the
 // RegistryCredentials descending by username the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // username desc
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then the order of the
 // results is undefined.
@@ -288,10 +275,9 @@ func (r *RegistryCredentialsListRequest) Page(value int) *RegistryCredentialsLis
 // of the names of the columns of a table. For example, in order to retrieve all the
 // RegistryCredentials for a user the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // username = 'abcxyz...'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the
 // RegistryCredentials that the user has permission to see will be returned.
@@ -353,7 +339,7 @@ func (r *RegistryCredentialsListRequest) SendContext(ctx context.Context) (resul
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}

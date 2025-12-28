@@ -22,13 +22,11 @@ package v1 // github.com/openshift-online/ocm-sdk-go/clustersmgmt/v1
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/openshift-online/ocm-sdk-go/errors"
 	"github.com/openshift-online/ocm-sdk-go/helpers"
 )
@@ -151,7 +149,7 @@ func (r *ClustersAddRequest) SendContext(ctx context.Context) (result *ClustersA
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
@@ -163,16 +161,6 @@ func (r *ClustersAddRequest) SendContext(ctx context.Context) (result *ClustersA
 		return
 	}
 	return
-}
-
-// marshall is the method used internally to marshal requests for the
-// 'add' method.
-func (r *ClustersAddRequest) marshal(writer io.Writer) error {
-	stream := helpers.NewStream(writer)
-	r.stream(stream)
-	return stream.Error
-}
-func (r *ClustersAddRequest) stream(stream *jsoniter.Stream) {
 }
 
 // ClustersAddResponse is the response for the 'add' method.
@@ -262,10 +250,9 @@ func (r *ClustersListRequest) Header(name string, value interface{}) *ClustersLi
 // the names of the columns of a table. For example, in order to sort the clusters
 // descending by region identifier the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // region.id desc
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then the order of the
 // results is undefined.
@@ -292,10 +279,9 @@ func (r *ClustersListRequest) Page(value int) *ClustersListRequest {
 // clusters with a name starting with `my` in the `us-east-1` region the value
 // should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // name like 'my%' and region.id = 'us-east-1'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the
 // clusters that the user has permission to see will be returned.
@@ -357,7 +343,7 @@ func (r *ClustersListRequest) SendContext(ctx context.Context) (result *Clusters
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
