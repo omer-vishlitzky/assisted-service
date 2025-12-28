@@ -22,13 +22,11 @@ package v1 // github.com/openshift-online/ocm-sdk-go/clustersmgmt/v1
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/openshift-online/ocm-sdk-go/errors"
 	"github.com/openshift-online/ocm-sdk-go/helpers"
 )
@@ -149,7 +147,7 @@ func (r *FlavoursAddRequest) SendContext(ctx context.Context) (result *FlavoursA
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
@@ -161,16 +159,6 @@ func (r *FlavoursAddRequest) SendContext(ctx context.Context) (result *FlavoursA
 		return
 	}
 	return
-}
-
-// marshall is the method used internally to marshal requests for the
-// 'add' method.
-func (r *FlavoursAddRequest) marshal(writer io.Writer) error {
-	stream := helpers.NewStream(writer)
-	r.stream(stream)
-	return stream.Error
-}
-func (r *FlavoursAddRequest) stream(stream *jsoniter.Stream) {
 }
 
 // FlavoursAddResponse is the response for the 'add' method.
@@ -260,10 +248,9 @@ func (r *FlavoursListRequest) Header(name string, value interface{}) *FlavoursLi
 // the names of the columns of a table. For example, in order to sort the flavours
 // descending by name the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // name desc
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then the order of the
 // results is undefined.
@@ -289,10 +276,9 @@ func (r *FlavoursListRequest) Page(value int) *FlavoursListRequest {
 // the names of the columns of a table. For example, in order to retrieve all the
 // flavours with a name starting with `my`the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // name like 'my%'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the flavours
 // that the user has permission to see will be returned.
@@ -354,7 +340,7 @@ func (r *FlavoursListRequest) SendContext(ctx context.Context) (result *Flavours
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}

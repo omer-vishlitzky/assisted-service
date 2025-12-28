@@ -39,6 +39,7 @@ type AddOnBuilder struct {
 	resourceName         string
 	subOperators         []*AddOnSubOperatorBuilder
 	targetNamespace      string
+	version              *AddOnVersionBuilder
 	enabled              bool
 	hasExternalResources bool
 	hidden               bool
@@ -67,6 +68,11 @@ func (b *AddOnBuilder) HREF(value string) *AddOnBuilder {
 	b.href = value
 	b.bitmap_ |= 4
 	return b
+}
+
+// Empty returns true if the builder is empty, i.e. no attribute has a value.
+func (b *AddOnBuilder) Empty() bool {
+	return b == nil || b.bitmap_&^1 == 0
 }
 
 // Description sets the value of the 'description' attribute to the given value.
@@ -215,6 +221,19 @@ func (b *AddOnBuilder) TargetNamespace(value string) *AddOnBuilder {
 	return b
 }
 
+// Version sets the value of the 'version' attribute to the given value.
+//
+// Representation of an add-on version.
+func (b *AddOnBuilder) Version(value *AddOnVersionBuilder) *AddOnBuilder {
+	b.version = value
+	if value != nil {
+		b.bitmap_ |= 524288
+	} else {
+		b.bitmap_ &^= 524288
+	}
+	return b
+}
+
 // Copy copies the attributes of the given object into this builder, discarding any previous values.
 func (b *AddOnBuilder) Copy(object *AddOn) *AddOnBuilder {
 	if object == nil {
@@ -257,6 +276,11 @@ func (b *AddOnBuilder) Copy(object *AddOn) *AddOnBuilder {
 		b.subOperators = nil
 	}
 	b.targetNamespace = object.targetNamespace
+	if object.version != nil {
+		b.version = NewAddOnVersion().Copy(object.version)
+	} else {
+		b.version = nil
+	}
 	return b
 }
 
@@ -303,5 +327,11 @@ func (b *AddOnBuilder) Build() (object *AddOn, err error) {
 		}
 	}
 	object.targetNamespace = b.targetNamespace
+	if b.version != nil {
+		object.version, err = b.version.Build()
+		if err != nil {
+			return
+		}
+	}
 	return
 }
