@@ -22,13 +22,11 @@ package v1 // github.com/openshift-online/ocm-sdk-go/accountsmgmt/v1
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/openshift-online/ocm-sdk-go/errors"
 	"github.com/openshift-online/ocm-sdk-go/helpers"
 )
@@ -149,7 +147,7 @@ func (r *ResourceQuotasAddRequest) SendContext(ctx context.Context) (result *Res
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
@@ -161,16 +159,6 @@ func (r *ResourceQuotasAddRequest) SendContext(ctx context.Context) (result *Res
 		return
 	}
 	return
-}
-
-// marshall is the method used internally to marshal requests for the
-// 'add' method.
-func (r *ResourceQuotasAddRequest) marshal(writer io.Writer) error {
-	stream := helpers.NewStream(writer)
-	r.stream(stream)
-	return stream.Error
-}
-func (r *ResourceQuotasAddRequest) stream(stream *jsoniter.Stream) {
 }
 
 // ResourceQuotasAddResponse is the response for the 'add' method.
@@ -267,10 +255,9 @@ func (r *ResourceQuotasListRequest) Page(value int) *ResourceQuotasListRequest {
 // instead of the names of the columns of a table. For example, in order to
 // retrieve resource quota with resource_type cluster.aws:
 //
-// [source,sql]
-// ----
+// ```sql
 // resource_type = 'cluster.aws'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the
 // items that the user has permission to see will be returned.
@@ -329,7 +316,7 @@ func (r *ResourceQuotasListRequest) SendContext(ctx context.Context) (result *Re
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}

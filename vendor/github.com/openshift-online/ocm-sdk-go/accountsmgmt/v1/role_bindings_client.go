@@ -22,13 +22,11 @@ package v1 // github.com/openshift-online/ocm-sdk-go/accountsmgmt/v1
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/openshift-online/ocm-sdk-go/errors"
 	"github.com/openshift-online/ocm-sdk-go/helpers"
 )
@@ -149,7 +147,7 @@ func (r *RoleBindingsAddRequest) SendContext(ctx context.Context) (result *RoleB
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
@@ -161,16 +159,6 @@ func (r *RoleBindingsAddRequest) SendContext(ctx context.Context) (result *RoleB
 		return
 	}
 	return
-}
-
-// marshall is the method used internally to marshal requests for the
-// 'add' method.
-func (r *RoleBindingsAddRequest) marshal(writer io.Writer) error {
-	stream := helpers.NewStream(writer)
-	r.stream(stream)
-	return stream.Error
-}
-func (r *RoleBindingsAddRequest) stream(stream *jsoniter.Stream) {
 }
 
 // RoleBindingsAddResponse is the response for the 'add' method.
@@ -267,10 +255,9 @@ func (r *RoleBindingsListRequest) Page(value int) *RoleBindingsListRequest {
 // instead of the names of the columns of a table. For example, in order to
 // retrieve role bindings with role_id AuthenticatedUser:
 //
-// [source,sql]
-// ----
+// ```sql
 // role_id = 'AuthenticatedUser'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the
 // items that the user has permission to see will be returned.
@@ -329,7 +316,7 @@ func (r *RoleBindingsListRequest) SendContext(ctx context.Context) (result *Role
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}

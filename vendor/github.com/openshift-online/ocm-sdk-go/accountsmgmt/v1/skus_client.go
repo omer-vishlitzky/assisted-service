@@ -107,10 +107,9 @@ func (r *SKUSListRequest) Page(value int) *SKUSListRequest {
 // instead of the names of the columns of a table. For example, in order to
 // retrieve SKUS large sized resources:
 //
-// [source,sql]
-// ----
+// ```sql
 // resource_name like '%large'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the
 // items that the user has permission to see will be returned.
@@ -169,7 +168,7 @@ func (r *SKUSListRequest) SendContext(ctx context.Context) (result *SKUSListResp
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
