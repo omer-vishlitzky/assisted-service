@@ -22,13 +22,11 @@ package v1 // github.com/openshift-online/ocm-sdk-go/accountsmgmt/v1
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/openshift-online/ocm-sdk-go/errors"
 	"github.com/openshift-online/ocm-sdk-go/helpers"
 )
@@ -170,10 +168,9 @@ func (r *SubscriptionsListRequest) Labels(value string) *SubscriptionsListReques
 // a SQL statement. For example, in order to sort the
 // subscriptions descending by name identifier the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // name desc
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then the order of the
 // results is undefined.
@@ -199,10 +196,9 @@ func (r *SubscriptionsListRequest) Page(value int) *SubscriptionsListRequest {
 // of the names of the columns of a table. For example, in order to retrieve all the
 // subscriptions for managed clusters the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // managed = 't'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the
 // clusters that the user has permission to see will be returned.
@@ -276,7 +272,7 @@ func (r *SubscriptionsListRequest) SendContext(ctx context.Context) (result *Sub
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
@@ -483,7 +479,7 @@ func (r *SubscriptionsPostRequest) SendContext(ctx context.Context) (result *Sub
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
@@ -495,16 +491,6 @@ func (r *SubscriptionsPostRequest) SendContext(ctx context.Context) (result *Sub
 		return
 	}
 	return
-}
-
-// marshall is the method used internally to marshal requests for the
-// 'post' method.
-func (r *SubscriptionsPostRequest) marshal(writer io.Writer) error {
-	stream := helpers.NewStream(writer)
-	r.stream(stream)
-	return stream.Error
-}
-func (r *SubscriptionsPostRequest) stream(stream *jsoniter.Stream) {
 }
 
 // SubscriptionsPostResponse is the response for the 'post' method.
