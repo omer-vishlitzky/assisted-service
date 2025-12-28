@@ -96,10 +96,9 @@ func (r *QuotaCostListRequest) Page(value int) *QuotaCostListRequest {
 // cost instead of the names of the columns of a table. For example, in order
 // to retrieve the quota cost for all add-ons:
 //
-// [source,sql]
-// ----
+// ```sql
 // quota_id LIKE 'add-on%'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the
 // items that the user has permission to see will be returned.
@@ -158,7 +157,7 @@ func (r *QuotaCostListRequest) SendContext(ctx context.Context) (result *QuotaCo
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}

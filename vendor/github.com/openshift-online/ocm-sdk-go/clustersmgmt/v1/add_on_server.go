@@ -44,6 +44,11 @@ type AddOnServer interface {
 	//
 	// Updates the add-on.
 	Update(ctx context.Context, request *AddOnUpdateServerRequest, response *AddOnUpdateServerResponse) error
+
+	// Versions returns the target 'add_on_versions' resource.
+	//
+	// Reference to the resource that manages the collection of addon versions.
+	Versions() AddOnVersionsServer
 }
 
 // AddOnDeleteServerRequest is the request for the 'delete' method.
@@ -156,6 +161,13 @@ func dispatchAddOn(w http.ResponseWriter, r *http.Request, server AddOnServer, s
 		}
 	}
 	switch segments[0] {
+	case "versions":
+		target := server.Versions()
+		if target == nil {
+			errors.SendNotFound(w, r)
+			return
+		}
+		dispatchAddOnVersions(w, r, target, segments[1:])
 	default:
 		errors.SendNotFound(w, r)
 		return
