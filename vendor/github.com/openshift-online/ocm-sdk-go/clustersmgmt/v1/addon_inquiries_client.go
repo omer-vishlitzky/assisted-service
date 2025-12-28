@@ -101,10 +101,9 @@ func (r *AddonInquiriesListRequest) Header(name string, value interface{}) *Addo
 // the names of the columns of a table. For example, in order to sort the add-ons
 // descending by name the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // name desc
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then the order of the
 // results is undefined.
@@ -130,10 +129,9 @@ func (r *AddonInquiriesListRequest) Page(value int) *AddonInquiriesListRequest {
 // the names of the columns of a table. For example, in order to retrieve all the
 // add-ons with a name starting with `my` the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // name like 'my%'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the add-ons
 // that the user has permission to see will be returned.
@@ -195,7 +193,7 @@ func (r *AddonInquiriesListRequest) SendContext(ctx context.Context) (result *Ad
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}

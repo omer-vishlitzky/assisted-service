@@ -22,13 +22,11 @@ package v1 // github.com/openshift-online/ocm-sdk-go/accountsmgmt/v1
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/openshift-online/ocm-sdk-go/errors"
 	"github.com/openshift-online/ocm-sdk-go/helpers"
 )
@@ -149,7 +147,7 @@ func (r *AccountsAddRequest) SendContext(ctx context.Context) (result *AccountsA
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
@@ -161,16 +159,6 @@ func (r *AccountsAddRequest) SendContext(ctx context.Context) (result *AccountsA
 		return
 	}
 	return
-}
-
-// marshall is the method used internally to marshal requests for the
-// 'add' method.
-func (r *AccountsAddRequest) marshal(writer io.Writer) error {
-	stream := helpers.NewStream(writer)
-	r.stream(stream)
-	return stream.Error
-}
-func (r *AccountsAddRequest) stream(stream *jsoniter.Stream) {
 }
 
 // AccountsAddResponse is the response for the 'add' method.
@@ -282,10 +270,9 @@ func (r *AccountsListRequest) Fields(value string) *AccountsListRequest {
 // a SQL statement. For example, in order to sort the
 // accounts descending by name identifier the value should be:
 //
-// [source,sql]
-// ----
+// ```sql
 // name desc
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then the order of the
 // results is undefined.
@@ -311,10 +298,9 @@ func (r *AccountsListRequest) Page(value int) *AccountsListRequest {
 // instead of the names of the columns of a table. For example, in order to
 // retrieve accounts with username starting with my:
 //
-// [source,sql]
-// ----
+// ```sql
 // username like 'my%'
-// ----
+// ```
 //
 // If the parameter isn't provided, or if the value is empty, then all the
 // items that the user has permission to see will be returned.
@@ -382,7 +368,7 @@ func (r *AccountsListRequest) SendContext(ctx context.Context) (result *Accounts
 	result.status = response.StatusCode
 	result.header = response.Header
 	if result.status >= 400 {
-		result.err, err = errors.UnmarshalError(response.Body)
+		result.err, err = errors.UnmarshalErrorStatus(response.Body, result.status)
 		if err != nil {
 			return
 		}
