@@ -3189,8 +3189,8 @@ var _ = Describe("cluster", func() {
 					mockHostApi.EXPECT().RefreshStatus(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(6)
 					mockHostApi.EXPECT().GetStagesByRole(gomock.Any(), gomock.Any()).Return(nil).Times(6)
 
-					apiVip := "1.2.3.100"
-					ingressVip := "1.2.3.101"
+					apiVip := "1.3.4.100"
+					ingressVip := "1.3.4.101"
 					reply := bm.V2UpdateCluster(ctx, installer.V2UpdateClusterParams{
 						ClusterID: clusterID,
 						ClusterUpdateParams: &models.V2ClusterUpdateParams{
@@ -3253,14 +3253,15 @@ var _ = Describe("cluster", func() {
 					ingressVip := "1.2.3.101"
 					apiVips := []*models.APIVip{{IP: models.IP(apiVip)}, {IP: models.IP("2001:db8::1")}}
 					ingressVips := []*models.IngressVip{{IP: models.IP(ingressVip)}, {IP: models.IP("2001:db8::2")}}
-
+					machineNetworks := []*models.MachineNetwork{{Cidr: "1.2.3.0/24"}, {Cidr: "2001:db8::/64"}}
 					reply := bm.V2UpdateCluster(ctx, installer.V2UpdateClusterParams{
 						ClusterID: clusterID,
 						ClusterUpdateParams: &models.V2ClusterUpdateParams{
-							Name:        swag.String("some-cluster-name"),
-							PullSecret:  swag.String(fakePullSecret),
-							APIVips:     apiVips,
-							IngressVips: ingressVips,
+							Name:            swag.String("some-cluster-name"),
+							PullSecret:      swag.String(fakePullSecret),
+							APIVips:         apiVips,
+							IngressVips:     ingressVips,
+							MachineNetworks: machineNetworks,
 						},
 					})
 					Expect(reply).Should(BeAssignableToTypeOf(installer.NewV2UpdateClusterCreated()))
@@ -4629,9 +4630,9 @@ var _ = Describe("cluster", func() {
 			Context("DHCP", func() {
 
 				var (
-					apiVip             = "10.11.12.15"
-					ingressVip         = "10.11.12.16"
-					primaryMachineCIDR = models.Subnet("10.11.0.0/16")
+					apiVip             = "1.2.3.15"
+					ingressVip         = "1.2.3.16"
+					primaryMachineCIDR = models.Subnet("1.2.3.0/24")
 				)
 
 				verifyMachineCIDRTimestampUpdated := func(beforeTimestamp time.Time) {
@@ -20018,6 +20019,14 @@ var _ = Describe("Dual-stack cluster", func() {
 					MachineNetworks: []*models.MachineNetwork{
 						{Cidr: "10.0.0.0/16"}, // IPv4 first - consistent
 						{Cidr: "2001:db8::/64"},
+					},
+					APIVips: []*models.APIVip{
+						{IP: "10.0.0.1"}, // IPv4 first
+						{IP: "2001:db8::1"},
+					},
+					IngressVips: []*models.IngressVip{
+						{IP: "10.0.0.2"}, // IPv4 first
+						{IP: "2001:db8::2"},
 					},
 				}
 
