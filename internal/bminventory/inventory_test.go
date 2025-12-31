@@ -20020,6 +20020,14 @@ var _ = Describe("Dual-stack cluster", func() {
 						{Cidr: "10.0.0.0/16"}, // IPv4 first - consistent
 						{Cidr: "2001:db8::/64"},
 					},
+					APIVips: []*models.APIVip{
+						{IP: "10.0.0.1"}, // IPv4 first
+						{IP: "2001:db8::1"},
+					},
+					IngressVips: []*models.IngressVip{
+						{IP: "10.0.0.2"}, // IPv4 first
+						{IP: "2001:db8::2"},
+					},
 				}
 
 				updatedCluster, err := bm.v2UpdateClusterInternal(ctx, params, Interactive, nil)
