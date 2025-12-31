@@ -3166,13 +3166,13 @@ var _ = Describe("cluster", func() {
 						Platform:              &models.Platform{Type: common.PlatformTypePtr(models.PlatformTypeBaremetal)},
 						UserManagedNetworking: swag.Bool(false),
 						CPUArchitecture:       common.X86CPUArchitecture,
-						MachineNetworks:       []*models.MachineNetwork{{Cidr: "1.3.4.0/24"}},
+						MachineNetworks:       []*models.MachineNetwork{{Cidr: "1.2.3.0/24"}},
 					}}
 					err := db.Create(cluster).Error
 					Expect(err).ShouldNot(HaveOccurred())
-					addHost(masterHostId1, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname0", "bootMode", "1.3.4.4/24", "10.11.50.90/16"), db)
-					addHost(masterHostId2, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname1", "bootMode", "1.3.4.5/24", "10.11.50.80/16"), db)
-					addHost(masterHostId3, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname2", "bootMode", "1.3.4.6/24", "7.8.9.10/24"), db)
+					addHost(masterHostId1, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname0", "bootMode", "1.2.3.4/24", "10.11.50.90/16"), db)
+					addHost(masterHostId2, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname1", "bootMode", "1.2.3.5/24", "10.11.50.80/16"), db)
+					addHost(masterHostId3, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname2", "bootMode", "1.2.3.6/24", "7.8.9.10/24"), db)
 				})
 
 				AfterEach(func() {
@@ -3189,8 +3189,8 @@ var _ = Describe("cluster", func() {
 					mockHostApi.EXPECT().RefreshStatus(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(6)
 					mockHostApi.EXPECT().GetStagesByRole(gomock.Any(), gomock.Any()).Return(nil).Times(6)
 
-					apiVip := "1.3.4.100"
-					ingressVip := "1.3.4.101"
+					apiVip := "1.2.3.100"
+					ingressVip := "1.2.3.101"
 					reply := bm.V2UpdateCluster(ctx, installer.V2UpdateClusterParams{
 						ClusterID: clusterID,
 						ClusterUpdateParams: &models.V2ClusterUpdateParams{
@@ -3773,9 +3773,9 @@ var _ = Describe("cluster", func() {
 				}}
 				err := db.Create(cluster).Error
 				Expect(err).ShouldNot(HaveOccurred())
-				addHost(masterHostId1, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname0", "bootMode", "1.3.4.4/24", "10.11.50.90/16"), db)
-				addHost(masterHostId2, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname1", "bootMode", "1.3.4.5/24", "10.11.50.80/16"), db)
-				addHost(masterHostId3, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname2", "bootMode", "1.3.4.6/24", "7.8.9.10/24"), db)
+				addHost(masterHostId1, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname0", "bootMode", "1.2.3.4/24", "10.11.50.90/16"), db)
+				addHost(masterHostId2, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname1", "bootMode", "1.2.3.5/24", "10.11.50.80/16"), db)
+				addHost(masterHostId3, models.HostRoleMaster, "known", models.HostKindHost, infraEnvID, clusterID, getInventoryStr("hostname2", "bootMode", "1.2.3.6/24", "7.8.9.10/24"), db)
 				err = db.Model(&models.Host{ID: &masterHostId3, ClusterID: &clusterID}).UpdateColumn("free_addresses",
 					makeFreeNetworksAddressesStr(makeFreeAddresses("10.11.0.0/16", "10.11.12.15", "10.11.12.16"))).Error
 				Expect(err).ToNot(HaveOccurred())
